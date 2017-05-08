@@ -1,4 +1,4 @@
-package com.bookstore.service;
+package com.bookstore.service.impl;
 
 import com.bookstore.domain.User;
 import com.bookstore.repository.UserRepository;
