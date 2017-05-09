@@ -10,4 +10,8 @@ public interface UserService {
     PasswordResetToken getPasswordResetToken(final String token);
 
     void createPasswordResetTokenForUser(final User user, final String token);
+
+    User findByUserName(String username);
+
+    User findByEmail(String email);
 }
