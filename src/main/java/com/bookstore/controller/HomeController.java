@@ -1,13 +1,20 @@
 package com.bookstore.controller;
 
+import com.bookstore.domain.User;
 import com.bookstore.security.PasswordResetToken;
 import com.bookstore.service.UserService;
+import com.bookstore.service.impl.UserSecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.security.Security;
 import java.util.Locale;
 
 /**
@@ -18,6 +25,9 @@ public class HomeController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserSecurityService userSecurityService;
 
     @RequestMapping("/")
     public String index() {
@@ -45,8 +55,26 @@ public class HomeController {
     }
 
     @RequestMapping("/newUser")
-    public String newUser(Model model) {
-        model.addAttribute("classActiveNewUser ", true);
-        return "myAccount";
+    public String newUser(Locale locale, @RequestParam("token") String token, Model model) {
+        PasswordResetToken passToken = userService.getPasswordResetToken(token);
+
+        if (passToken == null) {
+            String message = "Invalid Token.";
+            model.addAttribute("message", message);
+            return "redirect:badRequest";
+        }
+
+        User user = passToken.getUser();
+        String userName = user.getUsername();
+
+        UserDetails userDetails = userSecurityService.loadUserByUsername(userName);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
+        model.addAttribute("classActiveEdit ", true);
+        return "myProfile";
     }
 }
