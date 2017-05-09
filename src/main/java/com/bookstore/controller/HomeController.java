@@ -37,7 +37,7 @@ import java.util.UUID;
 public class HomeController {
 
     @Autowired
-    private JavaMailSender mainSender;
+    private JavaMailSender mailSender;
 
     @Autowired
     private MailConstructor mailConstructor;
