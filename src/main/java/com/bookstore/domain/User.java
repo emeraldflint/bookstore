@@ -85,7 +85,7 @@ public class User implements UserDetails{
         return firtName;
     }
 
-    public void setFirtName(String firtName) {
+    public void setFirstName(String firtName) {
         this.firtName = firtName;
     }
 
@@ -119,5 +119,17 @@ public class User implements UserDetails{
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public void setFirtName(String firtName) {
+        this.firtName = firtName;
+    }
+
+    public Set<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public void setUserRoles(Set<UserRole> userRoles) {
+        this.userRoles = userRoles;
     }
 }

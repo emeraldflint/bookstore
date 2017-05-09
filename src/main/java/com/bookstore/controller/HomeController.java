@@ -6,9 +6,12 @@ import com.bookstore.security.Role;
 import com.bookstore.security.UserRole;
 import com.bookstore.service.UserService;
 import com.bookstore.service.impl.UserSecurityService;
+import com.bookstore.utility.MailConstructor;
 import com.bookstore.utility.SecurityUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,12 +28,19 @@ import java.security.Security;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by ekasap on 06.03.2017.
  */
 @Controller
 public class HomeController {
+
+    @Autowired
+    private JavaMailSender mainSender;
+
+    @Autowired
+    private MailConstructor mailConstructor;
 
     @Autowired
     UserService userService;
@@ -64,19 +74,19 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/newUser", method = RequestMethod.POST)
-    public String newUserPost(HttpServletRequest request, @ModelAttribute("email")String userEmail, @ModelAttribute("username")
-                              String username, Model model) throws Exception{
-        model.addAttribute("classActiveNewAccount",     true);
-        model.addAttribute("email",userEmail);
+    public String newUserPost(HttpServletRequest request, @ModelAttribute("email") String userEmail, @ModelAttribute("username")
+            String username, Model model) throws Exception {
+        model.addAttribute("classActiveNewAccount", true);
+        model.addAttribute("email", userEmail);
         model.addAttribute("username", username);
 
-        if(userService.findByUserName(username) != null){
+        if (userService.findByUserName(username) != null) {
             model.addAttribute("username", true);
 
             return "myAccount";
         }
 
-        if(userService.findByEmail(userEmail) != null){
+        if (userService.findByEmail(userEmail) != null) {
             model.addAttribute("email", true);
 
             return "myAccount";
@@ -95,6 +105,19 @@ public class HomeController {
         Set<UserRole> userRoles = new HashSet<>();
         userRoles.add(new UserRole(user, role));
         userService.createUser(user, userRoles);
+
+        String token = UUID.randomUUID().toString();
+        userService.createPasswordResetTokenForUser(user, token);
+
+        String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
+
+        SimpleMailMessage email = mailConstructor.constructResetTokenEmail(appUrl, request.getLocale(), token, user, password);
+
+        mailSender.send(email);
+
+        model.addAttribute("emailSent", "true");
+
+        return "myAccount";
     }
 
     @RequestMapping("/newUser")

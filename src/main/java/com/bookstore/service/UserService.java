@@ -2,6 +2,9 @@ package com.bookstore.service;
 
 import com.bookstore.domain.User;
 import com.bookstore.security.PasswordResetToken;
+import com.bookstore.security.UserRole;
+
+import java.util.Set;
 
 /**
  * Created by z-dus on 09.05.2017.
@@ -14,4 +17,6 @@ public interface UserService {
     User findByUserName(String username);
 
     User findByEmail(String email);
+
+    User createUser(User user, Set<UserRole> userRoles) throws Exception;
 }

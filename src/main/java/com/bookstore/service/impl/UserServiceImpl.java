@@ -2,17 +2,24 @@ package com.bookstore.service.impl;
 
 import com.bookstore.domain.User;
 import com.bookstore.repository.PasswordResetTokenRepository;
+import com.bookstore.repository.RoleRepository;
 import com.bookstore.repository.UserRepository;
 import com.bookstore.security.PasswordResetToken;
+import com.bookstore.security.UserRole;
 import com.bookstore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 /**
  * Created by z-dus on 09.05.2017.
  */
 @Service
 public class UserServiceImpl implements UserService{
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -40,5 +47,23 @@ public class UserServiceImpl implements UserService{
     @Override
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public User createUser(User user, Set<UserRole> userRoles) throws Exception {
+        User localUser = userRepository.findByUsername(user.getUsername());
+
+        if(localUser != null){
+            throw new Exception("user already exist. Nothing will be done");
+        }else {
+            for (UserRole ur : userRoles){
+                roleRepository.save(ur.getRole());
+            }
+        }
+
+            user.getUserRoles().addAll(userRoles);
+        localUser = userRepository.save(user);
+
+        return localUser;
     }
 }
