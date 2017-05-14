@@ -40,21 +40,16 @@ public class HomeController {
     private MailConstructor mailConstructor;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
-    UserSecurityService userSecurityService;
+    private UserSecurityService userSecurityService;
 
     @RequestMapping("/")
     public String index() {
         return "index";
     }
 
-    /*  @RequestMapping("/myAccount")
-        public String myAccount() {
-          return "myAccount";
-      }
-  */
     @RequestMapping("/login")
     public String login(Model model) {
         model.addAttribute("classActiveLogin", true);
@@ -87,7 +82,7 @@ public class HomeController {
         String token = UUID.randomUUID().toString();
         userService.createPasswordResetTokenForUser(user, token);
 
-        String appUrl = "http://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath();
+        String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 
         SimpleMailMessage newEmail = mailConstructor.constructResetTokenEmail(appUrl, request.getLocale(), token, user, password);
 
@@ -99,14 +94,13 @@ public class HomeController {
         return "myAccount";
     }
 
-
-    @RequestMapping(value="/newUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/newUser", method = RequestMethod.POST)
     public String newUserPost(
             HttpServletRequest request,
             @ModelAttribute("email") String userEmail,
             @ModelAttribute("username") String username,
             Model model
-    ) throws Exception{
+    ) throws Exception {
         model.addAttribute("classActiveNewAccount", true);
         model.addAttribute("email", userEmail);
         model.addAttribute("username", username);
@@ -142,7 +136,7 @@ public class HomeController {
         String token = UUID.randomUUID().toString();
         userService.createPasswordResetTokenForUser(user, token);
 
-        String appUrl = "http://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath();
+        String appUrl = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 
         SimpleMailMessage email = mailConstructor.constructResetTokenEmail(appUrl, request.getLocale(), token, user, password);
 
@@ -161,22 +155,22 @@ public class HomeController {
         if (passToken == null) {
             String message = "Invalid Token.";
             model.addAttribute("message", message);
-            return "redirect:badRequest";
+            return "redirect:/badRequest";
         }
 
         User user = passToken.getUser();
-        String userName = user.getUsername();
+        String username = user.getUsername();
 
-        UserDetails userDetails = userSecurityService.loadUserByUsername(userName);
+        UserDetails userDetails = userSecurityService.loadUserByUsername(username);
 
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
+                userDetails.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         model.addAttribute("user", user);
 
-
-        model.addAttribute("classActiveEdit ", true);
+        model.addAttribute("classActiveEdit", true);
         return "myProfile";
     }
 }
