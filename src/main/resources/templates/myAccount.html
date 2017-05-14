@@ -43,7 +43,9 @@
                                 </div>
                                 <form th:action="@{/newUser}" method="post">
                                     <div class="form-group">
-                                        <label for="newUsername">* Username</label>
+                                        <label for="newUsername">* Username</label>&nbsp;<span
+                                            style="color: red;" th:if="${usernameExists}">Username
+												already exists. Choose a different one.</span>
                                         <input required="required" type="text" class="form-control" id="newUsername"
                                                name="username"/>
                                         <p style="color:#828282">Enter your username here.</p>
@@ -68,10 +70,11 @@
                     <div class="panel-group">
                         <div class="panel panel-default" style="border: none;">
                             <div class="panel-body" style="background-color: #ededed; margin-top:20px">
-                                <form>
+                                <div th:if="${param.error != null}" style="color:red;" >Incorrect username or password.</div>
+                                <form th:action="@/{login}" method="post">
                                     <div class="form-group">
-                                        <label for="newUsername">* Username</label>
-                                        <input required="required" type="text" class="form-control" id="newUsername"
+                                        <label for="username">* Username</label>
+                                        <input required="required" type="text" class="form-control" id="username"
                                                name="username"/>
                                         <p style="color:#828282">Enter your username here.</p>
                                     </div>
@@ -92,6 +95,8 @@
                     <div class="panel-group">
                         <div class="panel panel-default" style="border: none;">
                             <div class="panel-body" style="background-color: #ededed; margin-top:20px">
+                                <div th:if="${emailNotExist}" class="alert alert-danger">Email doesn't exist.</div>
+                                <div th:if="${forgetPasswordEmailSent}" class="alert alert-danger">Email doesn't exist.</div>
                                 <form>
                                     <div class="form-group">
                                         <label for="recoverEmail">* Your Email: </label>
