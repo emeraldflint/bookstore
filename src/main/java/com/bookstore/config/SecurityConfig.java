@@ -36,16 +36,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/js/**",
             "/image/**",
             "/",
+            "/newUser",
+            "/forgetPassword",
             "/myAccount"
     };
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity.authorizeRequests().antMatchers("/").permitAll().and()
+                .authorizeRequests().antMatchers("/h2-console/**").permitAll();
+
+        httpSecurity.csrf().disable();
+        httpSecurity.headers().frameOptions().disable();
+
         httpSecurity.authorizeRequests().antMatchers(PUBLIC_MATHERS).permitAll().anyRequest().authenticated();
         httpSecurity.csrf().disable().cors().disable().formLogin().failureUrl("/login?error").defaultSuccessUrl("/")
                 .loginPage("/login").permitAll().and().logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/?logout").deleteCookies("remember-me").permitAll().and().rememberMe();
     }
+
+
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

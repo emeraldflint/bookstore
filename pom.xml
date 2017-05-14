@@ -68,11 +68,12 @@
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
+			<version>1.4.195</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extracs-springsecurity4</artifactId>
+			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
 		</dependency>
 
 		<dependency>
@@ -83,9 +84,8 @@
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
+			<version>1.4.7</version>
 		</dependency>
-
-
 
 	</dependencies>
 
