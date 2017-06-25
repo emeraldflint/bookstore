@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -23,7 +24,7 @@ public class User implements UserDetails{
     private Long id;
     private String username;
     private String password;
-    private String firtName;
+    private String firstName;
     private String lastName;
 
     @Column(name="email", nullable = false, updatable = false)
@@ -31,9 +32,31 @@ public class User implements UserDetails{
     private String phone;
     private boolean enabled = true;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<UserShipping> userShippingList;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private List<UserPayment> userPaymentList;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<UserRole> userRoles = new HashSet<>();
+
+    public List<UserShipping> getUserShippingList() {
+        return userShippingList;
+    }
+
+    public void setUserShippingList(List<UserShipping> userShippingList) {
+        this.userShippingList = userShippingList;
+    }
+
+    public List<UserPayment> getUserPaymentList() {
+        return userPaymentList;
+    }
+
+    public void setUserPaymentList(List<UserPayment> userPaymentList) {
+        this.userPaymentList = userPaymentList;
+    }
 
     public Long getId() {
         return id;
@@ -81,12 +104,8 @@ public class User implements UserDetails{
         this.password = password;
     }
 
-    public String getFirtName() {
-        return firtName;
-    }
-
-    public void setFirstName(String firtName) {
-        this.firtName = firtName;
+    public String getFirstName() {
+        return firstName;
     }
 
     public String getLastName() {
@@ -121,8 +140,8 @@ public class User implements UserDetails{
         this.enabled = enabled;
     }
 
-    public void setFirtName(String firtName) {
-        this.firtName = firtName;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
     public Set<UserRole> getUserRoles() {

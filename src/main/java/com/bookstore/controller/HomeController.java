@@ -3,6 +3,7 @@ package com.bookstore.controller;
 import com.bookstore.domain.Book;
 import com.bookstore.domain.Book;
 import com.bookstore.domain.User;
+import com.bookstore.domain.UserShipping;
 import com.bookstore.security.PasswordResetToken;
 import com.bookstore.security.Role;
 import com.bookstore.security.UserRole;
@@ -11,6 +12,7 @@ import com.bookstore.service.UserService;
 import com.bookstore.service.impl.UserSecurityService;
 import com.bookstore.utility.MailConstructor;
 import com.bookstore.utility.SecurityUtility;
+import com.bookstore.utility.USConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -201,6 +203,29 @@ public class HomeController {
         model.addAttribute("user", user);
 
         model.addAttribute("classActiveEdit", true);
+        return "myProfile";
+    }
+
+    @RequestMapping("/myProfile")
+    public String myProfile(Model model, Principal principal) {
+        User user = userService.findByUserName(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+        //model.addAttribute("orderList", user.getOrderList());
+
+        UserShipping userShipping = new UserShipping();
+        model.addAttribute("userShipping", userShipping);
+
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        List<String> stateList = USConstants.listOfUSStatesCode;
+        Collections.sort(stateList);
+
+        model.addAttribute("stateList", stateList);
+        model.addAttribute("classActiveEdit", true);
+
         return "myProfile";
     }
 }
