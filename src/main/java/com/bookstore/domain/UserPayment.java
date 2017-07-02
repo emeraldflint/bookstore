@@ -8,12 +8,13 @@ import javax.persistence.*;
 public class UserPayment {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long Id;
+    private Long id;
     private String type;
     private String cardName;
     private String cardNumber;
     private int expiryMonth;
     private int expiryYear;
+    private int cvc;
     private String holderName;
     private boolean defaultPayment;
 
@@ -24,13 +25,12 @@ public class UserPayment {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "userPayment")
     private UserBilling userBilling;
 
-
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public String getType() {
@@ -73,6 +73,14 @@ public class UserPayment {
         this.expiryYear = expiryYear;
     }
 
+    public int getCvc() {
+        return cvc;
+    }
+
+    public void setCvc(int cvc) {
+        this.cvc = cvc;
+    }
+
     public String getHolderName() {
         return holderName;
     }
@@ -104,4 +112,5 @@ public class UserPayment {
     public void setUserBilling(UserBilling userBilling) {
         this.userBilling = userBilling;
     }
+
 }
