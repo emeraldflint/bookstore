@@ -1,9 +1,7 @@
 package com.bookstore.controller;
 
+import com.bookstore.domain.*;
 import com.bookstore.domain.Book;
-import com.bookstore.domain.Book;
-import com.bookstore.domain.User;
-import com.bookstore.domain.UserShipping;
 import com.bookstore.security.PasswordResetToken;
 import com.bookstore.security.Role;
 import com.bookstore.security.UserRole;
@@ -27,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 import java.security.Principal;
-import java.security.Security;
 import java.util.*;
 
 /**
@@ -124,6 +121,81 @@ public class HomeController {
 
 
         return "myAccount";
+    }
+
+    @RequestMapping("/listOfCreditCards")
+    public String listOfCreditCards(Model model, Principal principal, HttpServletRequest request) {
+        User user = userService.findByUserName(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+        //model.addAttribute("orderList", user.orderList());
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/listOfShippingAddresses")
+    public String listOfShippingAddresses(Model model, Principal principal, HttpServletRequest request) {
+        User user = userService.findByUserName(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+        //model.addAttribute("orderList", user.orderList());
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("listOfShippingAddresses", true);
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/addNewCreditCard")
+    public String addNewCreditCard(Model model, Principal principal) {
+        User user = userService.findByUserName(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("addNewCreditCard", true);
+        model.addAttribute("classActiveBilling", true);
+
+        UserBilling userBilling = new UserBilling();
+        UserPayment userPayment = new UserPayment();
+
+        model.addAttribute("userBilling", userBilling);
+        model.addAttribute("user", user);
+
+        List<String> stateList = USConstants.listOfUSStatesCode;
+        Collections.sort(stateList);
+
+        model.addAttribute("stateList", stateList);
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+
+        return "myProfile";
+
+    }
+
+    @RequestMapping("/addNewShippingAddress")
+    public String addNewShippingAddress(Model model, Principal principal) {
+        User user = userService.findByUserName(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("addNewShippingAddress", true);
+        model.addAttribute("classActiveShipping", true);
+
+        UserShipping userShipping = new UserShipping();
+
+        model.addAttribute("userShipping", userShipping);
+        model.addAttribute("user", user);
+
+        List<String> stateList = USConstants.listOfUSStatesCode;
+        Collections.sort(stateList);
+
+        model.addAttribute("stateList", stateList);
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+
+        return "myProfile";
+
     }
 
     @RequestMapping(value = "/newUser", method = RequestMethod.POST)
