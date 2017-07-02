@@ -57,19 +57,20 @@ public class UserServiceImpl implements UserService{
     public User createUser(User user, Set<UserRole> userRoles) throws Exception {
         User localUser = userRepository.findByUsername(user.getUsername());
 
-        if(localUser != null){
-            //throw new Exception("user already exist. Nothing will be done");
-            LOG.info("user {} already exist. Nothing will be done", user.getUsername());
-        }else {
-            for (UserRole ur : userRoles){
+        if(localUser != null) {
+            LOG.info("user {} already exists. Nothing will be done.", user.getUsername());
+        } else {
+            for (UserRole ur : userRoles) {
                 roleRepository.save(ur.getRole());
             }
-        }
 
             user.getUserRoles().addAll(userRoles);
-        localUser = userRepository.save(user);
+
+            localUser = userRepository.save(user);
+        }
 
         return localUser;
+
     }
 
     @Override
