@@ -12,6 +12,7 @@ import com.bookstore.service.impl.UserSecurityService;
 import com.bookstore.utility.MailConstructor;
 import com.bookstore.utility.SecurityUtility;
 import com.bookstore.utility.USConstants;
+import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -210,7 +211,7 @@ public class HomeController {
         model.addAttribute("stateList", stateList);
         model.addAttribute("userPaymentList", user.getUserPaymentList());
         model.addAttribute("userShippingList", user.getUserShippingList());
-		/*model.addAttribute("orderList", user.orderList());*/
+        /*model.addAttribute("orderList", user.orderList());*/
 
         return "myProfile";
     }
@@ -240,7 +241,7 @@ public class HomeController {
         User user = userService.findByUserName(principal.getName());
         UserPayment userPayment = userPaymentService.findById(creditCardId);
 
-        if(user.getId() != userPayment.getUser().getId()) {
+        if (user.getId() != userPayment.getUser().getId()) {
             return "badRequestPage";
         } else {
             model.addAttribute("user", user);
@@ -263,6 +264,42 @@ public class HomeController {
         }
     }
 
+    @RequestMapping(value = "/setDefaultPayment", method = RequestMethod.POST)
+    public String setDefaultPayment(@ModelAttribute("id") Long defaultPaymentId, Principal principal, Model model) {
+        User user = userService.findByUserName(principal.getName());
+        userService.setUserDefaultPayment(defaultPaymentId, user);
+
+        model.addAttribute("user", user);
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveBilling", true);
+
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+
+        return "myProfile";
+    }
+
+    @RequestMapping("/removeCreditCard")
+    public String removeCreditCard(@ModelAttribute("id") Long creditCardId, Principal principal, Model model) {
+        User user = userService.findByUserName(principal.getName());
+        UserPayment userPayment = userPaymentService.findById(creditCardId);
+
+        if (user.getId() != userPayment.getUser().getId()) {
+            return "badRequestPage";
+        } else {
+            model.addAttribute("user", user);
+            userPaymentService.removeById(creditCardId);
+
+            model.addAttribute("listOfCreditCards", true);
+            model.addAttribute("classActiveBilling", true);
+            model.addAttribute("listOfShippingAddresses", true);
+
+            model.addAttribute("userPaymentList", user.getUserPaymentList());
+            model.addAttribute("userShippingList", user.getUserShippingList());
+
+            return "myProfile";
+        }
+    }
 
     @RequestMapping("/addNewShippingAddress")
     public String addNewShippingAddress(
@@ -284,7 +321,7 @@ public class HomeController {
         model.addAttribute("stateList", stateList);
         model.addAttribute("userPaymentList", user.getUserPaymentList());
         model.addAttribute("userShippingList", user.getUserShippingList());
-		/*model.addAttribute("orderList", user.orderList());*/
+        /*model.addAttribute("orderList", user.orderList());*/
 
         return "myProfile";
     }

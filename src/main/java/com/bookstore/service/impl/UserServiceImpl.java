@@ -5,6 +5,7 @@ import com.bookstore.domain.UserBilling;
 import com.bookstore.domain.UserPayment;
 import com.bookstore.repository.PasswordResetTokenRepository;
 import com.bookstore.repository.RoleRepository;
+import com.bookstore.repository.UserPaymentRepository;
 import com.bookstore.repository.UserRepository;
 import com.bookstore.security.PasswordResetToken;
 import com.bookstore.security.UserRole;
@@ -14,13 +15,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
 
 /**
  * Created by z-dus on 09.05.2017.
  */
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
@@ -33,6 +35,9 @@ public class UserServiceImpl implements UserService{
     @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
+    @Autowired
+    private UserPaymentRepository userPaymentRepository;
+
     @Override
     public PasswordResetToken getPasswordResetToken(final String token) {
         return passwordResetTokenRepository.findByToken(token);
@@ -40,7 +45,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void createPasswordResetTokenForUser(final User user, final String token) {
-          final PasswordResetToken myToken = new PasswordResetToken(token, user);
+        final PasswordResetToken myToken = new PasswordResetToken(token, user);
         passwordResetTokenRepository.save(myToken);
 
     }
@@ -59,7 +64,7 @@ public class UserServiceImpl implements UserService{
     public User createUser(User user, Set<UserRole> userRoles) throws Exception {
         User localUser = userRepository.findByUsername(user.getUsername());
 
-        if(localUser != null) {
+        if (localUser != null) {
             LOG.info("user {} already exists. Nothing will be done.", user.getUsername());
         } else {
             for (UserRole ur : userRoles) {
@@ -88,5 +93,20 @@ public class UserServiceImpl implements UserService{
         userBilling.setUserPayment(userPayment);
         user.getUserPaymentList().add(userPayment);
         save(user);
+    }
+
+    @Override
+    public void setUserDefaultPayment(Long userPaymentId, User user) {
+        List<UserPayment> userPaymentList = (List<UserPayment>) userPaymentRepository.findAll();
+
+        for (UserPayment userPayment : userPaymentList) {
+            if (userPayment.getId() == userPaymentId) {
+                userPayment.setDefaultPayment(true);
+                userPaymentRepository.save(userPayment);
+            }else {
+                userPayment.setDefaultPayment(false);
+                userPaymentRepository.save(userPayment);
+            }
+        }
     }
 }
