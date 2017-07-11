@@ -8,11 +8,11 @@ import com.bookstore.security.UserRole;
 import com.bookstore.service.BookService;
 import com.bookstore.service.UserPaymentService;
 import com.bookstore.service.UserService;
+import com.bookstore.service.UserShippingService;
 import com.bookstore.service.impl.UserSecurityService;
 import com.bookstore.utility.MailConstructor;
 import com.bookstore.utility.SecurityUtility;
 import com.bookstore.utility.USConstants;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -24,7 +24,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 import java.security.Principal;
@@ -53,6 +52,9 @@ public class HomeController {
 
     @Autowired
     private UserPaymentService userPaymentService;
+
+    @Autowired
+    private UserShippingService userShippingService;
 
     @RequestMapping("/")
     public String index() {
@@ -283,6 +285,50 @@ public class HomeController {
         }
     }
 
+    @RequestMapping("/updateUserShipping")
+    public String updateUserShipping(
+            @ModelAttribute("id") Long shippingAddressId, Principal principal, Model model
+    ) {
+        User user = userService.findByUserName(principal.getName());
+        UserShipping userShipping = userShippingService.findById(shippingAddressId);
+
+        if (user.getId() != userShipping.getUser().getId()) {
+            return "badRequestPage";
+        } else {
+            model.addAttribute("user", user);
+            model.addAttribute("userShipping", userShipping);
+
+            List<String> stateList = USConstants.listOfUSStatesCode;
+            Collections.sort(stateList);
+            model.addAttribute("stateList", stateList);
+
+            model.addAttribute("addNewShippingAddress", true);
+            model.addAttribute("classActiveShipping", true);
+            model.addAttribute("listOfCreditCards", true);
+
+            model.addAttribute("userPaymentList", user.getUserPaymentList());
+            model.addAttribute("userShippingList", user.getUserShippingList());
+
+            return "myProfile";
+        }
+    }
+
+    @RequestMapping(value = "/setDefaultShippingAddress", method = RequestMethod.POST)
+    public String setDefaultShippingAddress(@ModelAttribute("defaultShippingAddressId") Long defaultShippingId, Principal principal, Model model) {
+        User user = userService.findByUserName(principal.getName());
+        userService.setUserDefaultShipping(defaultShippingId, user);
+
+        model.addAttribute("user", user);
+        model.addAttribute("listOfCreditCards", true);
+        model.addAttribute("classActiveShipping", true);
+
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+
+        return "myProfile";
+    }
+
+
     @RequestMapping(value = "/setDefaultPayment", method = RequestMethod.POST)
     public String setDefaultPayment(@ModelAttribute("id") Long defaultPaymentId, Principal principal, Model model) {
         User user = userService.findByUserName(principal.getName());
@@ -319,6 +365,31 @@ public class HomeController {
             return "myProfile";
         }
     }
+
+    @RequestMapping("/removeUserShipping")
+    public String removeUserShipping(
+            @ModelAttribute("id") Long userShippingId, Principal principal, Model model
+    ){
+        User user = userService.findByUserName(principal.getName());
+        UserShipping userShipping = userShippingService.findById(userShippingId);
+
+        if(user.getId() != userShipping.getUser().getId()) {
+            return "badRequestPage";
+        } else {
+            model.addAttribute("user", user);
+
+            userShippingService.removeById(userShippingId);
+
+            model.addAttribute("listOfShippingAddresses", true);
+            model.addAttribute("classActiveShipping", true);
+
+            model.addAttribute("userPaymentList", user.getUserPaymentList());
+            model.addAttribute("userShippingList", user.getUserShippingList());
+
+            return "myProfile";
+        }
+    }
+
 
     /*@RequestMapping("/listOfShippingAddress")
     public String listOfShippingAddresses(Model model, Principal principal, HttpServletRequest request){

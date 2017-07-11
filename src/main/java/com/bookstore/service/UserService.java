@@ -30,4 +30,6 @@ public interface UserService {
     void setUserDefaultPayment(Long userPaymentId, User user);
 
     void updateUserShipping(UserShipping userShipping, User user);
+
+    void setUserDefaultShipping(Long userShippingId, User user);
 }
