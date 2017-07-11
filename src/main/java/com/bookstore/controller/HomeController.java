@@ -24,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.server.PathParam;
 import java.security.Principal;
@@ -182,7 +183,7 @@ public class HomeController {
         /*model.addAttribute("orderList", user.orderList());*/
 
         model.addAttribute("listOfCreditCards", true);
-        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("classActiveShipping", true);
         model.addAttribute("listOfShippingAddresses", true);
 
         return "myProfile";
@@ -196,7 +197,7 @@ public class HomeController {
         model.addAttribute("user", user);
 
         model.addAttribute("addNewCreditCard", true);
-        model.addAttribute("classActiveBilling", true);
+        model.addAttribute("classActiveShipping", true);
         model.addAttribute("listOfShippingAddresses", true);
 
         UserBilling userBilling = new UserBilling();
@@ -230,6 +231,24 @@ public class HomeController {
         model.addAttribute("listOfCreditCards", true);
         model.addAttribute("classActiveBilling", true);
         model.addAttribute("listOfShippingAddresses", true);
+
+        return "myProfile";
+    }
+
+    @RequestMapping(value = "/addNewShippingAddress", method = RequestMethod.POST)
+    public String addNewShippingAddressPost(@ModelAttribute("userShipping") UserShipping userShipping,
+                                            @ModelAttribute("userBilling") UserBilling userBilling,
+                                            Principal principal, Model model
+    ) {
+        User user = userService.findByUserName(principal.getName());
+        userService.updateUserShipping(userShipping, user);
+
+        model.addAttribute("user", user);
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+        model.addAttribute("listOfShippingAddresses", true);
+        model.addAttribute("classActiveShipping", true);
+        model.addAttribute("listOfCreditCards", true);
 
         return "myProfile";
     }
@@ -300,6 +319,17 @@ public class HomeController {
             return "myProfile";
         }
     }
+
+    /*@RequestMapping("/listOfShippingAddress")
+    public String listOfShippingAddresses(Model model, Principal principal, HttpServletRequest request){
+        User user = userService.findByUserName(principal.getName());
+        model.addAttribute("user", user);
+        model.addAttribute("userPaymentList", user.getUserPaymentList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+        model.addAttribute("userShippingList", user.getUserShippingList());
+
+    }*/
+
 
     @RequestMapping("/addNewShippingAddress")
     public String addNewShippingAddress(

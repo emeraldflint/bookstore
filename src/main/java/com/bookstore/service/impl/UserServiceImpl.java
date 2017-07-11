@@ -3,6 +3,7 @@ package com.bookstore.service.impl;
 import com.bookstore.domain.User;
 import com.bookstore.domain.UserBilling;
 import com.bookstore.domain.UserPayment;
+import com.bookstore.domain.UserShipping;
 import com.bookstore.repository.PasswordResetTokenRepository;
 import com.bookstore.repository.RoleRepository;
 import com.bookstore.repository.UserPaymentRepository;
@@ -103,10 +104,18 @@ public class UserServiceImpl implements UserService {
             if (userPayment.getId() == userPaymentId) {
                 userPayment.setDefaultPayment(true);
                 userPaymentRepository.save(userPayment);
-            }else {
+            } else {
                 userPayment.setDefaultPayment(false);
                 userPaymentRepository.save(userPayment);
             }
         }
+    }
+
+    @Override
+    public void updateUserShipping(UserShipping userShipping, User user) {
+        userShipping.setUser(user);
+        userShipping.setUserShippingDefault(true);
+        user.getUserShippingList().add(userShipping);
+        save(user);
     }
 }
