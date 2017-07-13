@@ -1,8 +1,10 @@
 package com.bookstore.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by z-dus on 16.05.2017.
@@ -32,6 +34,18 @@ public class Book {
 
     @Transient
     private MultipartFile bookImage;
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    List<BookToCartItem> bookToCartItems;
+
+    public List<BookToCartItem> getBookToCartItems() {
+        return bookToCartItems;
+    }
+
+    public void setBookToCartItems(List<BookToCartItem> bookToCartItems) {
+        this.bookToCartItems = bookToCartItems;
+    }
 
     public Long getId() {
         return id;
