@@ -12,7 +12,7 @@ public class CartItem {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private int qry;
+    private int qty;
     private BigDecimal subtotal;
 
     @OneToOne
@@ -38,12 +38,12 @@ public class CartItem {
         this.id = id;
     }
 
-    public int getQry() {
-        return qry;
+    public int getQty() {
+        return qty;
     }
 
-    public void setQry(int qry) {
-        this.qry = qry;
+    public void setQty(int qty) {
+        this.qty = qty;
     }
 
     public BigDecimal getSubtotal() {
