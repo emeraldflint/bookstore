@@ -63,9 +63,9 @@ public class CheckoutController {
         }
 
         if (userShippingList.size() == 0) {
-            model.addAttribute("emptyPaymentList", true);
+            model.addAttribute("emptyShippingList", true);
         } else {
-            model.addAttribute("emptyPaymentList", false);
+            model.addAttribute("emptyShippingList", false);
         }
 
         ShoppingCart shoppingCart = user.getShoppingCart();
