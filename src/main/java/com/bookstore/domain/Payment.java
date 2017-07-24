@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 @Entity
 public class Payment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -85,6 +86,14 @@ public class Payment {
         this.holderName = holderName;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     public UserBilling getUserBilling() {
         return userBilling;
     }
@@ -92,5 +101,5 @@ public class Payment {
     public void setUserBilling(UserBilling userBilling) {
         this.userBilling = userBilling;
     }
-
 }
+

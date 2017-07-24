@@ -45,6 +45,8 @@ public class CheckoutController {
     private JavaMailSender mailSender;
     @Autowired
     private ShoppingCartService shoppingCartService;
+    @Autowired
+    private OrderService orderService;
 
     @RequestMapping("/checkout")
     public String checkout(
