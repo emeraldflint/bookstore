@@ -20,6 +20,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -369,11 +370,11 @@ public class HomeController {
     @RequestMapping("/removeUserShipping")
     public String removeUserShipping(
             @ModelAttribute("id") Long userShippingId, Principal principal, Model model
-    ){
+    ) {
         User user = userService.findByUserName(principal.getName());
         UserShipping userShipping = userShippingService.findById(userShippingId);
 
-        if(user.getId() != userShipping.getUser().getId()) {
+        if (user.getId() != userShipping.getUser().getId()) {
             return "badRequestPage";
         } else {
             model.addAttribute("user", user);
@@ -504,6 +505,63 @@ public class HomeController {
         model.addAttribute("user", user);
 
         model.addAttribute("classActiveEdit", true);
+        return "myProfile";
+    }
+
+    @RequestMapping(value = "/updateUserInfo", method = RequestMethod.POST)
+    public String updateUserInfo(@ModelAttribute("user") User user, @ModelAttribute("newPassword") String newPassword,
+                                 Model model) throws Exception {
+        User currentUser = userService.findById(user.getId());
+
+        if (currentUser == null) {
+            throw new Exception("User not found");
+        }
+        //Check email already exists
+        if (userService.findByEmail(user.getEmail()) != null) {
+            if (userService.findByEmail(user.getEmail()).getId() != currentUser.getId()) {
+                model.addAttribute("emailExists", true);
+                return "myProfile";
+            }
+        }
+
+        //Check username already exists
+        if (userService.findByUserName(user.getUsername()) != null) {
+            if(userService.findByUserName(user.getUsername()).getId() != currentUser.getId()) {
+                model.addAttribute("usernameExists", true);
+                return "myProfile";
+            }
+        }
+
+        //Update password
+        if (newPassword != null && !newPassword.isEmpty() && !newPassword.equals("")) {
+            BCryptPasswordEncoder passwordEncoder = SecurityUtility.passwordEncoder();
+            String dbPassword = currentUser.getPassword();
+            if (passwordEncoder.matches(user.getPassword(), dbPassword)) {
+                currentUser.setPassword(passwordEncoder.encode(newPassword));
+            } else {
+                model.addAttribute("incorrectPassword", true);
+                return "myProfile";
+            }
+        }
+
+        currentUser.setFirstName(user.getFirstName());
+        currentUser.setLastName(user.getLastName());
+        currentUser.setUsername(user.getUsername());
+        currentUser.setEmail(user.getUsername());
+
+        userService.save(currentUser);
+
+        model.addAttribute("updateSuccess", true);
+        model.addAttribute("user", currentUser);
+        model.addAttribute("classActiveEdit", true);
+
+        UserDetails userDetails = userSecurityService.loadUserByUsername(currentUser.getUsername());
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(),
+                userDetails.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         return "myProfile";
     }
 
