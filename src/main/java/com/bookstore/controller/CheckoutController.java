@@ -2,6 +2,7 @@ package com.bookstore.controller;
 
 import com.bookstore.domain.*;
 import com.bookstore.service.*;
+import com.bookstore.utility.MailConstructor;
 import com.bookstore.utility.USConstants;
 import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,8 @@ public class CheckoutController {
     private ShoppingCartService shoppingCartService;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private MailConstructor mailConstructor;
 
     @RequestMapping("/checkout")
     public String checkout(
